@@ -1,0 +1,48 @@
+micronaut:
+  application:
+    name: staffScheduler
+  server:
+    host: 0.0.0.0
+    port: 8080
+  router:
+    static-resources:
+      swagger:
+        enabled: true
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        enabled: true
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+      redoc:
+        enabled: true
+        paths: classpath:META-INF/swagger/views/redoc
+        mapping: /apidoc/**
+  security:
+    enabled: true
+    authentication: bearer
+    endpoints:
+      login:
+        enabled: true
+        path: /app/v1/login
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          secret:
+            generator:
+              secret: ${JWT_SECRET:cGxlYXNlQ2hhbmdlVGhpc1NlY3JldEZvckFOZXdPbmU=}
+              base64: true
+              jws-algorithm: HS256
+        generator:
+          # 1 day
+          access-token:
+            expiration: 86400
+
+datasources:
+  default:
+    url: ${JDBC_URL:`jdbc:postgresql://localhost:5432/staff_scheduler`}
+    username: ${JDBC_USER:sunnykumar}
+    password: ${JDBC_PASSWORD:pa$$word007}
+    driverClassName: ${JDBC_DRIVER:org.postgresql.Driver}
+    maximum-pool-size: 10
