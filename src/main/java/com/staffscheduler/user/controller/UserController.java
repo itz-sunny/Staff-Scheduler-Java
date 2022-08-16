@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -47,9 +48,12 @@ public class UserController {
     @ApiResponse(responseCode = "404", description = "API not found")
     @ApiResponse(responseCode = "401", description = "Returned if request is submitted by an anonymous user or if the access token is invalid e.g. expired")
     @ApiResponse(responseCode = "403", description = "Returned when user does not have permissions to access/modify this resource")
-    public Flowable<MutableHttpResponse<?>> fetchAllUsersSorted(@QueryValue Date startDate, @QueryValue Date endDate) {
+    public Flowable<MutableHttpResponse<?>> fetchAllUsersSorted(@QueryValue String startDate, @QueryValue String endDate) {
         return Flowable.fromCallable(() -> {
-            List<SortedUser> users = userService.fetchAllUsersSorted(startDate, endDate);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date start = sdf.parse(startDate);
+            Date end = sdf.parse(endDate);
+            List<SortedUser> users = userService.fetchAllUsersSorted(start, end);
             return users.isEmpty() ? HttpResponse.notFound() : HttpResponse.ok(users);
         }).subscribeOn(Schedulers.io());
     }
